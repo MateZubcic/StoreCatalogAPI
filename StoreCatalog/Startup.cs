@@ -35,7 +35,10 @@ namespace StoreCatalog
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
 
-            services.AddControllers();
+            services.AddControllers(options =>
+           {
+               options.SuppressAsyncSuffixInActionNames = false;
+           });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StoreCatalog", Version = "v1" });

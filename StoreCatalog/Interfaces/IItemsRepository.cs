@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using StoreCatalog.Dtos;
 using StoreCatalog.Entities;
 
@@ -7,15 +8,14 @@ namespace StoreCatalog
 {
     public interface IItemsRepository
     {
-        IEnumerable<Item> GetItemsAsync();
+        Task<IEnumerable<Item>> GetItemsAsync();
 
-        Item GetItemAsync(Guid id);
+        Task<Item> GetItemAsync(Guid id);
 
-        Item CreateItemAsync(Item itemToCreate);
+        Task<Item> CreateItemAsync(Item itemToCreate);
 
-        void UpdateItemAsync(Item itemToUpdate);
+        Task UpdateItemAsync(Item itemToUpdate);
 
-        void DeleteItemAsync(Guid id);
-
+        Task DeleteItemAsync(Guid id);
     }
 }

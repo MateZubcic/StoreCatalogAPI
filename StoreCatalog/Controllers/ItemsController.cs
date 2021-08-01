@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StoreCatalog.Dtos;
@@ -22,17 +23,17 @@ namespace StoreCatalog.Controllers
         }
 
         [HttpGet]
-        public ActionResult <IEnumerable<ItemDto>> GetItems()
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync()
         {
-            var repoItems = _repository.GetItemsAsync();
+            var repoItems = await _repository.GetItemsAsync();
             
-            return Ok(_mapper.Map<IEnumerable<ItemDto>>(repoItems));
+            return _mapper.Map<IEnumerable<ItemDto>>(repoItems);
         }
 
         [HttpGet("id")]
-        public ActionResult<ItemDto> GetItem(Guid id)
+        public async Task<ActionResult<ItemDto>> GetItemAsync(Guid id)
         {
-            var repoItem = _repository.GetItemAsync(id);
+            var repoItem = await _repository.GetItemAsync(id);
 
             if(repoItem == null)
                 return NotFound();
@@ -43,31 +44,33 @@ namespace StoreCatalog.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ItemDto> CreateItem(CreateItemDto item)
+        public async Task<ActionResult<ItemDto>> CreateItemAsync(CreateItemDto item)
         {
             var itemToCreate = _mapper.Map<Item>(item);
             
-            var createdItem = _repository.CreateItemAsync(itemToCreate);
+            var createdItem = await _repository.CreateItemAsync(itemToCreate);
             
-            return CreatedAtAction(nameof(GetItem), new {id = createdItem.Id}, _mapper.Map<ItemDto>(createdItem)); 
+            return CreatedAtAction(nameof(GetItemAsync), new {id = createdItem.Id}, _mapper.Map<ItemDto>(createdItem)); 
         }
 
         [HttpPut("id")]
-        public ActionResult UpdateItem(UpdateItemDto updateItem, Guid id)
+        public async Task<ActionResult> UpdateItemAsync(UpdateItemDto updateItem, Guid id)
         {
             var itemToUpdate = _mapper.Map<Item>(updateItem);
             itemToUpdate.Id = id;
-            _repository.UpdateItemAsync(itemToUpdate);
+            await _repository.UpdateItemAsync(itemToUpdate);
             return Ok();
         }
 
         [HttpDelete("id")]
-        public ActionResult DeleteItem(Guid id)
+        public async Task<ActionResult> DeleteItemAsync(Guid id)
         {
-            if(_repository.GetItemAsync(id) == null)
+            var existingItem = await _repository.GetItemAsync(id);
+
+            if(existingItem  is null)
                 return NotFound();
 
-            _repository.DeleteItemAsync(id);
+            await _repository.DeleteItemAsync(id);
 
             return Ok();
         }
